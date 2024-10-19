@@ -11,6 +11,7 @@ import time
 from nicegui import app, ui
 import json
 
+
 def load_passwords(file_path):
     """Load passwords from a JSON file."""
     with open(file_path, 'r') as file:
@@ -58,7 +59,9 @@ def register():
             save_users(users)  # Save to JSON file
             ui.notify("Registration successful!", color='positive')
             username_input.set_value('')  # Clear input fields
+
             password_input.set_value('')
+            ui.navigate.to('/login')
     else:
         ui.notify("Both fields are required.", color='negative')
 
@@ -85,11 +88,12 @@ def register_page():
 
         ui.button("Register", on_click=register).classes('mt-4')
 
+        ui.button('Log in', on_click=lambda: ui.navigate.to('/login'))
 
 unrestricted_page_routes = {'/login','/','/register'}
 
 
-@ ui.refreshable
+@ui.refreshable
 def chat_messages(own_id: str) -> None:
     if messages:
         for user_id, avatar, text, stamp in messages:
@@ -118,7 +122,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AuthMiddleware)
 
 
-@ ui.page('/me')
+@ui.page('/me')
 def me_page() -> None:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -141,7 +145,7 @@ def me_page() -> None:
 
 
 
-@ ui.page('/')
+@ui.page('/')
 def main_page() -> None:
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
@@ -160,8 +164,11 @@ def main_page() -> None:
             ui.html('Made with ❤️ by')
             ui.link('tr1x_em', 'https://trix.is-a.dev').classes('text-red-500 underline')
 
+    if app.storage.user.get('authenticated', False):
+        return RedirectResponse('/me')
 
-@ ui.page('/login')
+
+@ui.page('/login')
 def login() -> Optional[RedirectResponse]:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -210,7 +217,7 @@ async def broadcast_message(message: str,current):
 
 
 
-@ ui.page('/chat')
+@ui.page('/chat')
 async def main():
     def send() -> None:
         if text.value.strip():
@@ -254,4 +261,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=80)
+           title="Zwitter", favicon='💀')
