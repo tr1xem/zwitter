@@ -253,7 +253,7 @@ async def main():
 
                 # Add a send button for mobile users
                 ui.button(icon="send",on_click=send).classes('ml-3 flex items-center').props('rounded')
-    await ui.context.client.connected()
+    await ui.context.client.connected(reconnect_timeout=30)
     await broadcast_message(f"{user_id} is now connected.",ui.context.client)
 
     with ui.column().classes('w-full max-w-2xl mx-auto items-stretch'):
