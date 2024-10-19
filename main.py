@@ -68,7 +68,7 @@ def register():
 # Create the registration page
 
 
-@ui.page('/register',response_timeout=30)
+@ui.page('/register')
 def register_page():
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
@@ -89,6 +89,7 @@ def register_page():
         ui.button("Register", on_click=register).classes('mt-4')
 
         ui.button('Log in', on_click=lambda: ui.navigate.to('/login'))
+
 
 unrestricted_page_routes = {'/login','/','/register'}
 
@@ -122,7 +123,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AuthMiddleware)
 
 
-@ui.page('/me',response_timeout=30)
+@ui.page('/me')
 def me_page() -> None:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -145,7 +146,7 @@ def me_page() -> None:
 
 
 
-@ui.page('/',response_timeout=30)
+@ui.page('/')
 def main_page() -> None:
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
@@ -168,7 +169,7 @@ def main_page() -> None:
         return RedirectResponse('/me')
 
 
-@ui.page('/login',response_timeout=30)
+@ui.page('/login')
 def login() -> Optional[RedirectResponse]:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -217,11 +218,11 @@ async def broadcast_message(message: str,current):
 
 
 
-@ui.page('/chat',response_timeout=300)
+@ui.page('/chat',response_timeout=30)
 async def main():
     def send() -> None:
         if text.value.strip():
-            
+
             stamp = datetime.now().strftime('%X')
             messages.append((user_id, avatar, text.value, stamp))
             print(f"[{user_id}]: {text.value}")
@@ -261,4 +262,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=8080)
+           title="Zwitter", favicon='💀',port=80,reconnect_timeout=30)
