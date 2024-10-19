@@ -11,7 +11,6 @@ import time
 from nicegui import app, ui
 import json
 
-
 def load_passwords(file_path):
     """Load passwords from a JSON file."""
     with open(file_path, 'r') as file:
@@ -68,16 +67,13 @@ def register():
 
 @ui.page('/register')
 def register_page():
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
-            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
-            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
-            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
+            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
+            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
+            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
     with ui.column().classes('absolute-center items-center'):
         ui.label("Register").classes('text-2xl')
 
@@ -93,7 +89,7 @@ def register_page():
 unrestricted_page_routes = {'/login','/','/register'}
 
 
-@ui.refreshable
+@ ui.refreshable
 def chat_messages(own_id: str) -> None:
     if messages:
         for user_id, avatar, text, stamp in messages:
@@ -122,20 +118,17 @@ class AuthMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AuthMiddleware)
 
 
-@ui.page('/me')
+@ ui.page('/me')
 def me_page() -> None:
 
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
 
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
-            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
-            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
-            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
+            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
+            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
+            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
 
     def logout() -> None:
         app.storage.user.clear()
@@ -148,18 +141,15 @@ def me_page() -> None:
 
 
 
-@ui.page('/')
+@ ui.page('/')
 def main_page() -> None:
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
-            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
-            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
-            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
+            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
+            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
+            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
     with ui.column().classes('absolute-center items-center'):
         ui.label("Welcome to Zwitter!!").classes('text-2xl')
         ui.button('Log in', on_click=lambda: ui.navigate.to('/login'))
@@ -171,19 +161,16 @@ def main_page() -> None:
             ui.link('tr1x_em', 'https://trix.is-a.dev').classes('text-red-500 underline')
 
 
-@ui.page('/login')
+@ ui.page('/login')
 def login() -> Optional[RedirectResponse]:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
-            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
-            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
-            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
+            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
+            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
+            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
 
     def try_login() -> None:  # local function to avoid passing username and password as arguments
         if users.get(username.value) == password.value:
@@ -223,7 +210,7 @@ async def broadcast_message(message: str,current):
 
 
 
-@ui.page('/chat')
+@ ui.page('/chat')
 async def main():
     def send() -> None:
         if text.value.strip():
@@ -233,16 +220,13 @@ async def main():
             messages.append((user_id, avatar, text.value, stamp))
             text.value = ''
             chat_messages.refresh()
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
-            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
-            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
-            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)) \
-                .props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
+            ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
+            ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
+            ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
 
     user_id = app.storage.user["username"]
     avatar = f'https://robohash.org/{user_id}?bgset=bg2'
@@ -257,8 +241,7 @@ async def main():
                 with ui.avatar().on('click', lambda: ui.navigate.to(main)):
                     ui.image(avatar)
 
-                text = ui.input(placeholder='message').on('keydown.enter', send) \
-                    .props('rounded outlined input-class=mx-3').classes('flex-grow')
+                text = ui.input(placeholder='message').on('keydown.enter', send).props('rounded outlined input-class=mx-3').classes('flex-grow')
 
                 # Add a send button for mobile users
                 ui.button(icon="send",on_click=send).classes('ml-3 flex items-center').props('rounded')
