@@ -68,7 +68,7 @@ def register():
 # Create the registration page
 
 
-@ui.page('/register')
+@ui.page('/register',response_timeout=30)
 def register_page():
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
@@ -122,7 +122,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
 app.add_middleware(AuthMiddleware)
 
 
-@ui.page('/me')
+@ui.page('/me',response_timeout=30)
 def me_page() -> None:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -145,7 +145,7 @@ def me_page() -> None:
 
 
 
-@ui.page('/')
+@ui.page('/',response_timeout=30)
 def main_page() -> None:
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
@@ -168,7 +168,7 @@ def main_page() -> None:
         return RedirectResponse('/me')
 
 
-@ui.page('/login')
+@ui.page('/login',response_timeout=30)
 def login() -> Optional[RedirectResponse]:
 
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -217,7 +217,7 @@ async def broadcast_message(message: str,current):
 
 
 
-@ui.page('/chat')
+@ui.page('/chat',response_timeout=300)
 async def main():
     def send() -> None:
         if text.value.strip():
