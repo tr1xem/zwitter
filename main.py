@@ -68,14 +68,7 @@ def register():
 
 @ui.page('/register')
 def register_page():
-
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'), on_change=lambda e: ui.run_javascript(f'''
-        fetch('/dark_mode', {{
-            method: 'POST',
-            headers: {{'Content-Type': 'application/json'}},
-            body: JSON.stringify({{value: {e.value}}}),
-        }});
-    '''))
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
@@ -132,13 +125,8 @@ app.add_middleware(AuthMiddleware)
 @ui.page('/me')
 def me_page() -> None:
 
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'), on_change=lambda e: ui.run_javascript(f'''
-        fetch('/dark_mode', {{
-            method: 'POST',
-            headers: {{'Content-Type': 'application/json'}},
-            body: JSON.stringify({{value: {e.value}}}),
-        }});
-    '''))
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
+
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
@@ -162,13 +150,7 @@ def me_page() -> None:
 
 @ui.page('/')
 def main_page() -> None:
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'), on_change=lambda e: ui.run_javascript(f'''
-        fetch('/dark_mode', {{
-            method: 'POST',
-            headers: {{'Content-Type': 'application/json'}},
-            body: JSON.stringify({{value: {e.value}}}),
-        }});
-    '''))
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
@@ -192,13 +174,7 @@ def main_page() -> None:
 @ui.page('/login')
 def login() -> Optional[RedirectResponse]:
 
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'), on_change=lambda e: ui.run_javascript(f'''
-        fetch('/dark_mode', {{
-            method: 'POST',
-            headers: {{'Content-Type': 'application/json'}},
-            body: JSON.stringify({{value: {e.value}}}),
-        }});
-    '''))
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
@@ -214,7 +190,7 @@ def login() -> Optional[RedirectResponse]:
             app.storage.user.update(
                 {'username': username.value, 'authenticated': True})
             # go back to where the user wanted to go
-            ui.navigate.to(app.storage.user.get('/me')
+            ui.navigate.to(app.storage.user.get('referrer_path', '/me'))
         else:
             ui.notify('Wrong username or password', color='negative')
 
@@ -257,13 +233,7 @@ async def main():
             messages.append((user_id, avatar, text.value, stamp))
             text.value = ''
             chat_messages.refresh()
-    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'), on_change=lambda e: ui.run_javascript(f'''
-        fetch('/dark_mode', {{
-            method: 'POST',
-            headers: {{'Content-Type': 'application/json'}},
-            body: JSON.stringify({{value: {e.value}}}),
-        }});
-    '''))
+    dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode')
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
 
