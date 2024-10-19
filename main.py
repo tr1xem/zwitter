@@ -221,10 +221,10 @@ async def broadcast_message(message: str,current):
 async def main():
     def send() -> None:
         if text.value.strip():
-
-            print(f"[{user_id}]: {text.value}")
+            
             stamp = datetime.now().strftime('%X')
             messages.append((user_id, avatar, text.value, stamp))
+            print(f"[{user_id}]: {text.value}")
             text.value = ''
             chat_messages.refresh()
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
