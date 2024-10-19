@@ -214,7 +214,7 @@ def login() -> Optional[RedirectResponse]:
             app.storage.user.update(
                 {'username': username.value, 'authenticated': True})
             # go back to where the user wanted to go
-            ui.navigate.to(app.storage.user.get('referrer_path', '/me'))
+            ui.navigate.to(app.storage.user.get('/me')
         else:
             ui.notify('Wrong username or password', color='negative')
 
