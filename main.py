@@ -322,7 +322,7 @@ async def main():
 
 
                 messages.append((user_id, avatar, formatted_message, stamp))
-                replying_to=reply_text
+                replying_to=None
             else:
                 # Append message with sender's name included
                 messages.append((user_id, avatar, f"{text.value}", stamp))
@@ -368,4 +368,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
+           title="Zwitter", favicon='💀',port=80,reconnect_timeout=30)
