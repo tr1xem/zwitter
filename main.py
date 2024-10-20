@@ -10,7 +10,7 @@ from typing import List, Tuple
 import time
 from nicegui import app, ui
 import json
-
+import re
 
 def load_passwords(file_path):
     """Load passwords from a JSON file."""
@@ -23,7 +23,7 @@ def load_passwords(file_path):
 
 # Load the passwords
 
-messages: List[Tuple[str, str, str, str]] = []
+messages: List[Tuple[str, str, str, str]] = []  # Add Optional[str] for original_message_id
 # File to store users and passwords
 PASSWORD_FILE = 'logins.json'
 
@@ -48,24 +48,28 @@ users = load_users()
 
 
 def register():
+    name = name_input.value.strip()  # Get the name value
     username = username_input.value.strip()
     password = password_input.value.strip()
+    selected_option = option_input.value  # Get the selected option
 
-    if username and password:
+    if username and password and name:
         if username in users:
             ui.notify("Username already exists.", color='negative')
         else:
-            users[username] = password  # Store the username and password
+            users[username] = {
+                'password': password,
+                'name': name,
+                'option': selected_option  # Store selected option
+            }
             save_users(users)  # Save to JSON file
             ui.notify("Registration successful!", color='positive')
             username_input.set_value('')  # Clear input fields
-
             password_input.set_value('')
+            name_input.set_value('')  # Clear name input
             ui.navigate.to('/login')
     else:
-        ui.notify("Both fields are required.", color='negative')
-
-# Create the registration page
+        ui.notify("All fields are required.", color='negative')
 
 
 @ui.page('/register')
@@ -73,36 +77,30 @@ def register_page():
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
     with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
-
             ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
             ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
             ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
+
     with ui.column().classes('absolute-center items-center'):
         ui.label("Register").classes('text-2xl')
 
         global username_input
         global password_input
+        global name_input
+        global option_input
 
+        name_input = ui.input("Name").props('rounded outlined').classes('w-full max-w-xs')  # Name input field
         username_input = ui.input("Username").props('rounded outlined').classes('w-full max-w-xs')
         password_input = ui.input("Password", password=True, password_toggle_button=True).props('rounded outlined').classes('w-full max-w-xs')
 
-        ui.button("Register", on_click=register).classes('mt-4')
+        # Dropdown for options
+        option_input = ui.select(label="Avatar", options=["Robots", "Monster", "Cat", "Human"]).props('rounded outlined').classes('w-full max-w-xs')
 
+        ui.button("Register", on_click=register).classes('mt-4')
         ui.button('Log in', on_click=lambda: ui.navigate.to('/login'))
 
 
 unrestricted_page_routes = {'/login','/','/register'}
-
-
-@ui.refreshable
-def chat_messages(own_id: str) -> None:
-    if messages:
-        for user_id, avatar, text, stamp in messages:
-            ui.chat_message(name=user_id, text=text, stamp=stamp,
-                            avatar=avatar, sent=own_id == user_id)
-    else:
-        ui.label('No messages yet').classes('mx-auto my-36')
-    ui.run_javascript('window.scrollTo(0, document.body.scrollHeight)')
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -122,7 +120,22 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(AuthMiddleware)
 
+def get_avatar(name, avatar_type):
+# Mapping of avatar types to their respective sets
+    avatar_mapping = {
+        "Robots": "set1",
+        "Monster": "set2",
+        "Cat": "set4",
+        "Human": "set5"
+    }
 
+# Get the corresponding set for the given avatar type
+    avatar_set = avatar_mapping.get(avatar_type, "set1")  # Default to "set1" if not found
+
+# Construct the link using the name and the mapped set
+    link = f'https://robohash.org/{name}?set={avatar_set}&bgset=bg2'
+
+    return link
 @ui.page('/me')
 def me_page() -> None:
 
@@ -139,11 +152,16 @@ def me_page() -> None:
         app.storage.user.clear()
         ui.navigate.to('/login')
         ui.notify('You have been logged out.')
-    with ui.column().classes('absolute-center items-center'):
-        ui.label(f'Hello {app.storage.user["username"]}!').classes('text-2xl')
-        ui.button("Logout", on_click=logout, icon='logout')
-        ui.button("Chat", on_click=lambda: ui.navigate.to('/chat'), icon='chat')
+    username = app.storage.user["username"]  # Get the logged-in user's username
+    user_info = users.get(username, {})  # Access user info based on username
 
+
+    with ui.column().classes('absolute-center items-center'):
+        ui.label(f'Hello {user_info.get('name', 'Unknown User')}!').classes('text-h3')  # Display user's name
+        ui.label(f'Username:{username}').classes('text-lg')
+        ui.label(f'Avatar: {user_info.get('option', 'No Option Selected')}').classes('text-lg')  # Display selected option
+        ui.button("Logout", on_click=logout, icon='logout')
+        ui.button("chat", on_click=lambda: ui.navigate.to('/chat'), icon='chat')
 
 
 @ui.page('/')
@@ -165,8 +183,8 @@ def main_page() -> None:
             ui.html('Made with ❤️ by')
             ui.link('tr1x_em', 'https://trix.is-a.dev').classes('text-red-500 underline')
 
-    if app.storage.user.get('authenticated', False):
-        return RedirectResponse('/me')
+    if app.storage.user.get('authenticated', True):
+        RedirectResponse('/me')
 
 
 @ui.page('/login')
@@ -180,15 +198,18 @@ def login() -> Optional[RedirectResponse]:
             ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
             ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
 
-    def try_login() -> None:  # local function to avoid passing username and password as arguments
-        if users.get(username.value) == password.value:
-            app.storage.user.update(
-                {'username': username.value, 'authenticated': True})
-            # go back to where the user wanted to go
+    def try_login() -> None:
+        """Function to attempt login."""
+        username_value = username.value.strip()
+        password_value = password.value.strip()
+
+        # Check if username exists and validate password
+        if username_value in users and users[username_value]['password'] == password_value:
+            app.storage.user.update({'username': username_value, 'authenticated': True})
+            # Redirect to the page where the user wanted to go
             ui.navigate.to(app.storage.user.get('referrer_path', '/me'))
         else:
             ui.notify('Wrong username or password', color='negative')
-
     if app.storage.user.get('authenticated', False):
         return RedirectResponse('/me')
     with ui.column().classes('absolute-center items-center'):
@@ -215,30 +236,116 @@ async def broadcast_message(message: str,current):
             with client:
                 time.sleep(1)
                 ui.notify(message,postion="top")
+@ui.refreshable
+def chat_messages(own_id: str) -> None:
+    ui.add_css("""
+.chat-message-container {
+    position: relative;  /* Allows absolute positioning of child elements */
+}
+
+.reply-button {
+    display: none; /* Initially hide the button */
+}
+
+.chat-bg {
+               background-image: url('https://i.imgur.com/Gk3qlQ2.png');
+               background-size: cover; /* Cover the entire area */
+        background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+}
 
 
+.chat-message-container:hover .reply-button {
+    display: block; /* Show button on hover */
+}
+""")
+    if messages:
+        for user_id, avatar, text, stamp in messages:
+            # Retrieve the user's name from the users dictionary
+            user_name = users.get(user_id, {}).get('name', user_id)
 
+            # Create a container for each message
+            with ui.row().classes('w-full items-center chat-message-container chat-bg'):
+                # Check if the message is from the current user
+                if own_id == user_id:
+                        # Display chat message on the right
+                        ui.chat_message(name=user_name, text=text.replace('\n', '<br>'), stamp=stamp,
+                                    avatar=avatar, sent=True,text_html=True).classes('ml-auto')
+
+                    # Add a reply button that appears on hover, aligned to the left of this message
+                        with ui.button(icon="reply", on_click=lambda msg_text=text, sender_name=user_id: send_reply(msg_text, sender_name)).props('flat').classes('reply-button rounded-full mr-1'):
+                            ui.label('').classes('hidden')  # Placeholder to make it a button
+                else:
+
+                # Display chat message on the left
+                    ui.chat_message(name=user_name, text=text.replace('\n', '<br>'), stamp=stamp,
+                                    avatar=avatar, sent=False,text_html=True).classes('mr-auto')
+
+                    # Add a reply button that appears on hover, aligned to the right of this message
+                    with ui.button(icon="reply",on_click=lambda msg_text=text, sender_name=user_id: send_reply(msg_text, sender_name)).props('flat').classes('reply-button rounded-full ml-2'):
+                        ui.label('').classes('hidden')  # Placeholder to make it a button
+
+    else:
+        ui.label('No messages yet').classes('mx-auto my-36')
+
+    ui.run_javascript('window.scrollTo(0, document.body.scrollHeight)')
+
+replying_to = None
+def send_reply(msg_text, sender_name):
+    global replying_to  # Access the global variable
+    replying_to = (sender_name, msg_text)  # Set the message and sender being replied to
+    print(f"Replying to: {sender_name}: {msg_text}")
 @ui.page('/chat',response_timeout=30)
 async def main():
     def send() -> None:
-        if text.value.strip():
+        global replying_to  # Access the global variable
 
+        if text.value.strip():
             stamp = datetime.now().strftime('%X')
-            messages.append((user_id, avatar, text.value, stamp))
-            print(f"[{user_id}]: {text.value}")
+
+            # Limit the length of the reply message
+            max_length = 40  # Set your desired maximum length
+            reply_text = text.value  # Truncate if necessary
+
+            # Check if replying to a message
+            if replying_to:
+                if replying_to[1].startswith("<div style='color: gray; font-style: italic;'>"):
+                    pattern = r'<div>(.*?)</div>'
+                    matches = re.findall(pattern, replying_to[1])
+                    print(matches)
+                    formatted_message = f"<div style='color: gray; font-style: italic;'>Replying to {replying_to[0]}:<br>{matches[0][:max_length]}</div><div>{reply_text}</div>"
+
+                    print(f"Reply 1 : {formatted_message}")
+                else:
+                    formatted_message = f"<div style='color: gray; font-style: italic;'>Replying to {replying_to[0]}:<br>{replying_to[1][:max_length] }</div><div>{reply_text}</div>"
+                    print(f"Reply 2 : {formatted_message}")
+
+
+                messages.append((user_id, avatar, formatted_message, stamp))
+                replying_to=reply_text
+            else:
+                # Append message with sender's name included
+                messages.append((user_id, avatar, f"{text.value}", stamp))
+
             text.value = ''
             chat_messages.refresh()
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
-    with ui.element().classes('max-[420px]:hidden top-0 right').tooltip('Cycle theme mode through dark, light, and system/auto.'):
+    with ui.element().classes('max-[420px]:hidden top-0 right p-4'):
         with ui.column().classes('absolute top-0 right-0 p-4'):
+            ui.tooltip('Cycle theme mode through dark, light, and system/auto.')
 
             ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
             ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=False)
             ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
 
+    username = app.storage.user["username"]  # Get the logged-in user's username
+    user_info = users.get(username, {})  # Access user info based on username
+    name = user_info.get('name', 'Unknown User')
+    #    ui.label(f'Hello {user_info.get('name', 'Unknown User')}!').classes('text-h3')  # Display user's name
     user_id = app.storage.user["username"]
-    avatar = f'https://robohash.org/{user_id}?bgset=bg2'
+    avatar = get_avatar(name,user_info.get('option'))
     clients.append(ui.context.client)
+
 
     # Notify all clients that a new user has connected
     ui.add_css(
@@ -253,8 +360,8 @@ async def main():
 
                 # Add a send button for mobile users
                 ui.button(icon="send",on_click=send).classes('ml-3 flex items-center').props('rounded')
-   # await ui.context.client.connected(reconnect_timeout=30)
-    await broadcast_message(f"{user_id} is now connected.",ui.context.client)
+   # await ui.context.client.connected(response_timeout=10)
+    await broadcast_message(f"{name} is now connected.",ui.context.client)
 
     with ui.column().classes('w-full max-w-2xl mx-auto items-stretch'):
         chat_messages(user_id)
@@ -262,4 +369,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
+           title="Zwitter", favicon='💀',port=80,reconnect_timeout=30)
