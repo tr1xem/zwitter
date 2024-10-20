@@ -1,1 +1,1 @@
-{"user1": "pass1", "user2": "pass2", "admin": "password", "new": "password", "Hi": "hello"}
+{"admin": {"password": "passwotd", "name": "trix", "option": "Robots"}}
