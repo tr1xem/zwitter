@@ -191,7 +191,7 @@ def main_page() -> None:
     with ui.column().classes('absolute bottom-0 right-0 p-4'):
         with ui.row():
             ui.html('Made with ❤️ by')
-            ui.link('Saumya', 'https://trix.is-a.dev').classes('text-red-500 underline')
+            ui.link('tr1x_em', 'https://trix.is-a.dev').classes('text-red-500 underline')
 
     if app.storage.user.get('authenticated', True):
         RedirectResponse('/me')
