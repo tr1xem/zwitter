@@ -262,4 +262,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=80,reconnect_timeout=30)
+           title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
