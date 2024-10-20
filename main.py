@@ -191,7 +191,7 @@ def main_page() -> None:
     with ui.column().classes('absolute bottom-0 right-0 p-4'):
         with ui.row():
             ui.html('Made with ❤️ by')
-            ui.link('tr1x_em', 'https://trix.is-a.dev').classes('text-red-500 underline')
+            ui.link('Saumya', 'https://trix.is-a.dev').classes('text-red-500 underline')
 
     if app.storage.user.get('authenticated', True):
         RedirectResponse('/me')
@@ -224,15 +224,16 @@ def login() -> Optional[RedirectResponse]:
     if app.storage.user.get('authenticated', False):
         return RedirectResponse('/me')
     with ui.column().classes('absolute-center items-center'):
-        ui.label("Login").classes('text-2xl')
+        ui.label("Login").classes('text-5xl')
         global username
         username = ui.input('Username').on('keydown.enter', try_login).props('rounded outlined').classes('w-full max-w-xs')
 
         password = ui.input('Password', password=True, password_toggle_button=True).on(
             'keydown.enter', try_login).props('rounded outlined').classes('w-full max-w-xs')
 
-        ui.button('Log in', on_click=try_login)
-        ui.button('Register', on_click=lambda: ui.navigate.to('/register'))
+        with ui.row().classes('items-center'):
+            ui.button('Log in',icon='login', on_click=try_login)
+            ui.button('Register', icon='home',on_click=lambda: ui.navigate.to('/register'))
     return None
 
 
@@ -378,4 +379,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
+           title="Zwitter", favicon='💀',port=80,reconnect_timeout=30)
