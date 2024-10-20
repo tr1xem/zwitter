@@ -265,7 +265,7 @@ def chat_messages(own_id: str) -> None:
             user_name = users.get(user_id, {}).get('name', user_id)
 
             # Create a container for each message
-            with ui.row().classes('w-full items-center chat-message-container chat-bg'):
+            with ui.row().classes('w-full items-center chat-message-container '):
                 # Check if the message is from the current user
                 if own_id == user_id:
                         # Display chat message on the right
@@ -330,7 +330,7 @@ async def main():
             text.value = ''
             chat_messages.refresh()
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
-    with ui.element().classes('max-[420px]:hidden top-0 right p-4'):
+    with ui.element().classes('max-[420px]:hidden top-0 right p-4' ):
         with ui.column().classes('absolute top-0 right-0 p-4'):
             ui.tooltip('Cycle theme mode through dark, light, and system/auto.')
 
@@ -348,8 +348,7 @@ async def main():
 
 
     # Notify all clients that a new user has connected
-    ui.add_css(
-        r'a:link, a:visited {color: inherit !important; text-decoration: none; font-weight: 500}')
+    ui.add_css(r'a:link, a:visited {color: inherit !important; text-decoration: none; font-weight: 500; } {background-image: url("https://i.imgur.com/Gk3qlQ2.png"); background-size: cover; background-position: center; background-repeat: no-repeat;}')
     with ui.footer().classes('bg-black'):
         with ui.column().classes('w-full max-w-3xl mx-auto my-6'):
             with ui.row().classes('w-full no-wrap items-center'):
@@ -369,4 +368,4 @@ async def main():
 
 if __name__ in {'__main__', '__mp_main__'}:
     ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
+           title="Zwitter", favicon='💀',port=80,reconnect_timeout=30)
