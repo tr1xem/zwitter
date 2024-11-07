@@ -1,14 +1,42 @@
 from typing import Optional
-
-from fastapi import Request
+from fastapi import Request, FastAPI,HTTPException
 from fastapi.responses import RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from datetime import datetime
 from typing import List, Tuple
 import time
-from nicegui import app, ui
+from nicegui import ui,app
 import json
 import re
+
+
+
+# Storing Commands
+
+online_users = {
+    "user1": {"name": "Nice Guy", "status": "Online", "avatar": "https://api.hello-avatar.com/adorables/285/1"},
+    "user2": {"name": "Nice Person", "status": "Online", "avatar": "https://api.hello-avatar.com/adorables/285/2"},
+}
+
+
+clients = []
+
+# Fast Api Disconnect Endpoint
+
+FS= FastAPI()
+@FS.post('/api/user/disconnect')
+async def user_disconnect(request: Request):
+    data = await request.json()
+    user_id = data.get('userId')
+
+    if user_id in online_users:
+        online_users.pop(user_id)
+        return {"message": f"User {user_id} disconnected."}
+    else:
+        raise HTTPException(status_code=404, detail="User not found")
+
+
+# Functions - Load and Save and Register
 
 def load_passwords(file_path):
     """Load passwords from a JSON file."""
@@ -16,7 +44,7 @@ def load_passwords(file_path):
         passwords = json.load(file)
     return passwords
 
-messages: List[Tuple[str, str, str, str]] = []  
+messages: List[Tuple[str, str, str, str]] = []
 
 PASSWORD_FILE = 'logins.json'
 
@@ -36,10 +64,10 @@ def save_users(users):
 users = load_users()
 
 def register():
-    name = name_input.value.strip()  
+    name = name_input.value.strip()
     username = username_input.value.strip()
     password = password_input.value.strip()
-    selected_option = option_input.value  
+    selected_option = option_input.value
 
     if username and password and name:
         if username in users:
@@ -48,16 +76,56 @@ def register():
             users[username] = {
                 'password': password,
                 'name': name,
-                'option': selected_option  
+                'option': selected_option
             }
-            save_users(users)  
+            save_users(users)
             ui.notify("Registration successful!", color='positive')
-            username_input.set_value('')  
+            username_input.set_value('')
             password_input.set_value('')
-            name_input.set_value('')  
+            name_input.set_value('')
             ui.navigate.to('/login')
     else:
         ui.notify("All fields are required.", color='negative')
+
+
+def get_avatar(name, avatar_type):
+
+    avatar_mapping = {
+        "Robots": "set1",
+        "Monster": "set2",
+        "Cat": "set4",
+        "Human": "set5"
+    }
+
+    avatar_set = avatar_mapping.get(avatar_type, "set1")
+
+    link = f'https://robohash.org/{name}?set={avatar_set}&bgset=bg2'
+
+    return link
+
+
+# Auth - Middleware
+
+
+class AuthMiddleware(BaseHTTPMiddleware):
+    """This middleware restricts access to all NiceGUI pages.
+
+    It redirects the user to the login page if they are not authenticated.
+    """
+
+    async def dispatch(self, request: Request, call_next):
+        if not app.storage.user.get('authenticated', False):
+            if not request.url.path.startswith('/_nicegui') and request.url.path not in unrestricted_page_routes:
+
+                app.storage.user['referrer_path'] = request.url.path
+                return RedirectResponse('/login')
+        return await call_next(request)
+
+app.add_middleware(AuthMiddleware)
+unrestricted_page_routes = {'/login','/','/register'}
+
+# Web Endpoint
+
 
 @ui.page('/register')
 def register_page():
@@ -77,7 +145,7 @@ def register_page():
         global name_input
         global option_input
 
-        name_input = ui.input("Name").props('rounded outlined').classes('w-full max-w-xs')  
+        name_input = ui.input("Name").props('rounded outlined').classes('w-full max-w-xs')
         username_input = ui.input("Username").props('rounded outlined').classes('w-full max-w-xs')
         password_input = ui.input("Password", password=True, password_toggle_button=True).props('rounded outlined').classes('w-full max-w-xs')
 
@@ -87,38 +155,7 @@ def register_page():
             ui.button("Register",icon='home',on_click=register)
             ui.button('Log in', icon='login',on_click=lambda: ui.navigate.to('/login'))
 
-unrestricted_page_routes = {'/login','/','/register'}
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    """This middleware restricts access to all NiceGUI pages.
-
-    It redirects the user to the login page if they are not authenticated.
-    """
-
-    async def dispatch(self, request: Request, call_next):
-        if not app.storage.user.get('authenticated', False):
-            if not request.url.path.startswith('/_nicegui') and request.url.path not in unrestricted_page_routes:
-
-                app.storage.user['referrer_path'] = request.url.path
-                return RedirectResponse('/login')
-        return await call_next(request)
-
-app.add_middleware(AuthMiddleware)
-
-def get_avatar(name, avatar_type):
-
-    avatar_mapping = {
-        "Robots": "set1",
-        "Monster": "set2",
-        "Cat": "set4",
-        "Human": "set5"
-    }
-
-    avatar_set = avatar_mapping.get(avatar_type, "set1")  
-
-    link = f'https://robohash.org/{name}?set={avatar_set}&bgset=bg2'
-
-    return link
 @ui.page('/me')
 def me_page() -> None:
     dark_mode = ui.dark_mode(value=app.storage.browser.get('dark_mode'))
@@ -133,17 +170,17 @@ def me_page() -> None:
         app.storage.user.clear()
         ui.navigate.to('/login')
         ui.notify('You have been logged out.')
-    username = app.storage.user["username"]  
-    user_info = users.get(username, {})  
+    username = app.storage.user["username"]
+    user_info = users.get(username, {})
 
     name = user_info.get('name', 'Unknown User')
     avatar = get_avatar(name,user_info.get('option'))
 
     with ui.column().classes('absolute-center items-center'):
         ui.image(avatar).classes('rounded-full w-48 h-48 ml-4')
-        ui.label(f'Hello {user_info.get('name', 'Unknown User')}!').classes('text-h3')  
+        ui.label(f'Hello {user_info.get("name", "Unknown User")}!').classes('text-h3')
         ui.label(f'Username:{username}').classes('text-lg')
-        ui.label(f'Avatar: {user_info.get('option', 'No Option Selected')}').classes('text-lg')  
+        ui.label(f'Avatar: {user_info.get("option", "No Option Selected")}').classes('text-lg')
         with ui.row().classes('items-center'):
            ui.button("Logout", on_click=logout, icon='logout')
            ui.button("chat", on_click=lambda: ui.navigate.to('/chat'), icon='chat')
@@ -213,15 +250,41 @@ def login() -> Optional[RedirectResponse]:
             ui.button('Register', icon='home',on_click=lambda: ui.navigate.to('/register'))
     return None
 
-clients = []
 
+# Online Users Implementation
+
+
+user_container = ui.column()
 async def broadcast_message(message: str,current):
     """Send a message to all connected clients."""
     for client in clients:
         if client != current:
             with client:
                 time.sleep(1)
+
                 ui.notify(message,postion="top")
+                with user_container:
+                    user_container.clear()
+                    update_user()
+        else:
+            with user_container:
+                user_container.clear()
+                update_user()
+
+
+
+def update_user():
+    for users in online_users:
+        with ui.item(on_click=lambda: ui.notify(f'{online_users[users]["name"]}')):
+                with ui.item_section().props('avatar'):
+                    ui.icon('person')
+                with ui.item_section():
+                    ui.item_label(f'{online_users[users]["name"]}')
+                with ui.item_section().props('side'):
+                    ui.icon('chat')
+
+
+
 @ui.refreshable
 def chat_messages(own_id: str) -> None:
     ui.add_css("""
@@ -249,43 +312,47 @@ def chat_messages(own_id: str) -> None:
 
             user_name = users.get(user_id, {}).get('name', user_id)
 
-            with ui.row().classes('w-full items-center chat-message-container '):
 
+            with ui.row().classes('w-full items-center chat-message-container '):
                 if own_id == user_id:
 
                         ui.chat_message(name=user_name, text=text.replace('\n', '<br>'), stamp=stamp,
                                     avatar=avatar, sent=True,text_html=True).classes('ml-auto')
 
                         with ui.button(icon="reply", on_click=lambda msg_text=text, sender_name=user_id: send_reply(msg_text, sender_name)).props('flat').classes('reply-button rounded-full mr-1'):
-                            ui.label('').classes('hidden')  
+                            ui.label('').classes('hidden')
                 else:
 
                     ui.chat_message(name=user_name, text=text.replace('\n', '<br>'), stamp=stamp,
                                     avatar=avatar, sent=False,text_html=True).classes('mr-auto')
 
                     with ui.button(icon="reply",on_click=lambda msg_text=text, sender_name=user_id: send_reply(msg_text, sender_name)).props('flat').classes('reply-button rounded-full ml-2'):
-                        ui.label('').classes('hidden')  
+                        ui.label('').classes('hidden')
 
     else:
         ui.label('No messages yet').classes('mx-auto my-36')
 
     ui.run_javascript('window.scrollTo(0, document.body.scrollHeight)')
 
+
+
 replying_to = None
 def send_reply(msg_text, sender_name):
-    global replying_to  
-    replying_to = (sender_name, msg_text)  
+    global replying_to
+    replying_to = (sender_name, msg_text)
     print(f"Replying to: {sender_name}: {msg_text}")
+
+
 @ui.page('/chat',response_timeout=30)
 async def main():
     def send() -> None:
-        global replying_to  
+        global replying_to
 
         if text.value.strip():
             stamp = datetime.now().strftime('%X')
 
-            max_length = 40  
-            reply_text = text.value  
+            max_length = 40
+            reply_text = text.value
 
             if replying_to:
                 if replying_to[1].startswith("<div style='color: gray; font-style: italic;'>"):
@@ -314,16 +381,28 @@ async def main():
             ui.button(icon='dark_mode', on_click=lambda: dark_mode.set_value(None)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', value=True)
             ui.button(icon='light_mode', on_click=lambda: dark_mode.set_value(True)).props('flat fab-mini color=black').bind_visibility_from(dark_mode, 'value', value=False)
             ui.button(icon='brightness_auto', on_click=lambda: dark_mode.set_value(False)).props('flat fab-mini color=white').bind_visibility_from(dark_mode, 'value', lambda mode: mode is None)
-
-    username = app.storage.user["username"]  
-    user_info = users.get(username, {})  
+    username = app.storage.user["username"]
+    user_info = users.get(username, {})
     name = user_info.get('name', 'Unknown User')
 
     user_id = app.storage.user["username"]
     avatar = get_avatar(name,user_info.get('option'))
     clients.append(ui.context.client)
 
-    ui.add_css(r'a:link, a:visited {color: inherit !important; text-decoration: none; font-weight: 500; } {background-image: url("https://i.imgur.com/Gk3qlQ2.png"); background-size: cover; background-position: center; background-repeat: no-repeat;}')
+    ui.run_javascript(f"""
+        window.addEventListener('beforeunload', function(event) {{
+            const userId = '{ui.context.client}'; // Dynamic user ID
+
+            fetch('/api/user/disconnect', {{
+                method: 'POST',
+                headers: {{
+                    'Content-Type': 'application/json'
+                }},
+                body: JSON.stringify({{ userId: userId }})
+            }});
+        }});
+    """)
+
     with ui.footer().classes('bg-black'):
         with ui.column().classes('w-full max-w-3xl mx-auto my-6'):
             with ui.row().classes('w-full no-wrap items-center'):
@@ -334,11 +413,21 @@ async def main():
 
                 ui.button(icon="send",on_click=send).classes('ml-3 flex items-center').props('rounded')
 
-    await broadcast_message(f"{name} is now connected.",ui.context.client)
+    ui.add_css(r'a:link, a:visited {color: inherit !important; text-decoration: none; font-weight: 500; } {background-image: url("https://i.imgur.com/Gk3qlQ2.png"); background-size: cover; background-position: center; background-repeat: no-repeat;}')
+    online_users[str(ui.context.client)] = {
+            "name": name,
+            "status": "online",
+            "avatar": avatar
+        }
+    user_container = ui.column()
+    with user_container:
+        update_user()
+        await broadcast_message(f"{name} is now connected.",ui.context.client)
+
+
 
     with ui.column().classes('w-full max-w-2xl mx-auto items-stretch'):
         chat_messages(user_id)
 
 if __name__ in {'__main__', '__mp_main__'}:
-    ui.run(storage_secret='THIS_NEEDS_TO_BE_CHANGED',
-           title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
+    ui.run(storage_secret="AAA",title="Zwitter", favicon='💀',port=8080,reconnect_timeout=30)
