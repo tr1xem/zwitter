@@ -24,6 +24,7 @@ markdown2==2.5.1
 MarkupSafe==3.0.2
 middleware==1.2.3
 multidict==6.1.0
+mysql-connector-python==9.1.0
 nicegui==2.4.0
 orjson==3.10.7
 propcache==0.2.0
