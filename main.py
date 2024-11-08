@@ -2,7 +2,7 @@ import frontend
 from frontend import *
 from fastapi import FastAPI,HTTPException,Request
 app = FastAPI()
-
+import uvicorn
 
 
 @app.post('/api/user/disconnect')
@@ -25,4 +25,4 @@ async def user_disconnect(request: Request):
 frontend.init(app)
 
 if __name__ == '__main__':
-    print('Please start the app with the "uvicorn" command as shown in the start.sh script')
+   uvicorn.run("main:app", host="0.0.0.0", port=8080, workers=1, log_level="info")
