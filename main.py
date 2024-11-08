@@ -19,6 +19,11 @@ async def user_disconnect(request: Request):
         raise HTTPException(status_code=404, detail="User not found")
 
 
+# FOR CHECKS
+
+@app.get("/check")
+async def always_success():
+    return JSONResponse(content={"message": "Success"}, status_code=200)
 
 
 
