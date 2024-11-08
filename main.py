@@ -2,7 +2,6 @@ import frontend
 from frontend import *
 from fastapi import FastAPI,HTTPException,Request
 app = FastAPI()
-from backend import *
 
 
 
