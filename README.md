@@ -20,11 +20,14 @@ Note: Python 3.10+ Recommended
 
 - [X] Login System
 - [ ] Sql Integration
+- [X] Online user list
 - [X] Account Page
 - [ ] Multi Threading
-- [ ] User List
+- [X] User List
 - [X] Reply System
 - [X] Avatar Options
+- [ ] Custom Status
+- [ ] Custom Indicators
 
 ## Screenshots
 
