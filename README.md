@@ -28,6 +28,7 @@ Note: Python 3.10+ Recommended
 - [X] Avatar Options
 - [ ] Custom Status
 - [ ] Custom Indicators
+- [ ] Chat rooms
 
 ## Screenshots
 
