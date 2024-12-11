@@ -1,6 +1,6 @@
-import frontend
-from frontend import *
+from modules.frontend import *
 from fastapi import FastAPI,HTTPException,Request
+from fastapi.responses import JSONResponse
 app = FastAPI()
 import uvicorn
 
@@ -27,7 +27,7 @@ async def always_success():
 
 
 
-frontend.init(app)
+init(app)
 
 if __name__ == '__main__':
    uvicorn.run("main:app", host="127.0.0.1", port=8080, workers=1, log_level="info")
