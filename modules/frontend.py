@@ -410,7 +410,7 @@ async def main():
             update_user()
 
         # Ensuring chat messages appear in the remaining space
-        with ui.column().style("margin-left: 30%;"):
+        with ui.column().style("margin-left: 5%;"):
             chat_messages(user_id)
 
 
