@@ -1,5 +1,4 @@
 .env
-env/
 chat/
 .nicegui/
 # Byte-compiled / optimized / DLL files
