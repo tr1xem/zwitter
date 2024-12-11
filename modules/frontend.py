@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import List, Tuple
 import time
 from nicegui import ui,app
+import json
 import re
 from modules.sqlwrapper import  *
 
@@ -29,9 +30,30 @@ def handle_disconnect(user_id):
         print(f"User {user_id} disconnected and removed from the list.")
 # Functions - Load and Save and Register
 
+def load_passwords(file_path):
+    """Load passwords from a JSON file."""
+    with open(file_path, 'r') as file:
+        passwords = json.load(file)
+    return passwords
 
 messages: List[Tuple[str, str, str, str]] = []
 
+PASSWORD_FILE = 'logins.json'
+
+def load_users():
+    """Load users from the JSON file."""
+    try:
+        with open(PASSWORD_FILE, 'r') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def save_users(users):
+    """Save users to the JSON file."""
+    with open(PASSWORD_FILE, 'w') as file:
+        json.dump(users, file)
+
+users = load_users()
 
 def register():
     name = name_input.value.strip()
@@ -271,11 +293,8 @@ def chat_messages(own_id: str) -> None:
 """)
     if messages:
         for user_id, avatar, text, stamp in messages:
-            username = app.storage.user["username"]
-            user_info = getuser(username)
-            user_name = user_info[2]
 
-
+            user_name = users.get(user_id, {}).get('name', user_id)
 
 
             with ui.row().classes('w-full items-center chat-message-container '):
