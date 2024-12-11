@@ -1,5 +1,5 @@
 # Zwitter
-<centre>[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?name=zwitter&repository=tr1xem%2Fzwitter&branch=main&run_command=python+main.py&privileged=true&instance_type=free&ports=8080%3Bhttp%3B%2F&hc_protocol%5B8080%5D=http&hc_grace_period%5B8080%5D=5&hc_interval%5B8080%5D=30&hc_restart_limit%5B8080%5D=3&hc_timeout%5B8080%5D=20&hc_path%5B8080%5D=%2Fcheck&hc_method%5B8080%5D=get)<br></centre>
+
 Zwitter is a real time chat app based on a python module [NiceGui](https://nicegui.io/) supporting auto avatar genration and dark and light theme. 
 
 ## Requirements
@@ -19,7 +19,7 @@ Note: Python 3.10+ Recommended
 ## TODO
 
 - [X] Login System
-- [x] Sql Integration
+- [ ] Sql Integration
 - [X] Online user list
 - [X] Account Page
 - [ ] Multi Threading
