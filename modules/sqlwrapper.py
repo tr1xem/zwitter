@@ -1,15 +1,23 @@
 import mysql.connector as  sql
-cn =  sql.connect(user='root', password='root', host='localhost',database='login',    charset='utf8mb4',
-    collation='utf8mb4_general_ci')
+cn =  sql.connect(user='root', password='root', host='localhost',database='login',    charset='utf8mb4', collation='utf8mb4_general_ci')
 cursor  =  cn.cursor()
 cursor.execute('select * from users')
-def  showusers():
-    print (cursor.fetchall())
+create_table_query = """
+CREATE TABLE IF NOT EXISTS users (
+    username VARCHAR(20) NOT NULL PRIMARY KEY,
+    password VARCHAR(20) DEFAULT NULL,
+    displayname VARCHAR(20) DEFAULT NULL,
+    option VARCHAR(10) DEFAULT NULL
+);
+"""
+cursor.execute(create_table_query)
+cn.commit()
 
-showusers()
 def registeruser(username,password,displayname,option):
     cursor.execute(f"INSERT INTO users (username,password,displayname,option) VALUES ('{username}','{password}','{displayname}','{option}')")
     cn.commit()
+
+
 def  loginuser(username,password):
     cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = '{username}' AND password = '{password}'")
     result = cursor.fetchall()
