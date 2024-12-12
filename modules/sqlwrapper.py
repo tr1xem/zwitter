@@ -45,7 +45,6 @@ def registeruser(username, password, displayname, option):
     cn.commit()
 
 def loginuser(username, password):
-    print(username, password)
     cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username, password))
     result = cursor.fetchall()
     if result[0][0] == 1:
