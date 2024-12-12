@@ -12,7 +12,7 @@ Note: Python 3.10+ Recommended
 
 ## How to run?
 
-1.)  Set env  vars  see example env
+1.)  Set env variables see example env (the last 2 are for compatibility with linux mysql)
 
 2.) ``` pip install -r requirements.txt ```
 
