@@ -14,6 +14,7 @@ if db_type == 'mysql':
         charset=os.getenv('DB_CHARSET'),
         collation=os.getenv('DB_COLLATION')
     )
+    print("Connected to MySQL")
 elif db_type == 'postgres':
     import psycopg2
     cn = psycopg2.connect(
@@ -21,9 +22,9 @@ elif db_type == 'postgres':
         password=os.getenv('DATABASE_PASSWORD'),
         host=os.getenv('DATABASE_HOST'),
         database=os.getenv('DATABASE_NAME'),
-                sslmode='require'  # Require SSL connection
-
+        sslmode='require'  # Require SSL connection
     )
+    print("Connected to PostgreSQL")
 else:
     raise ValueError("Unsupported DB type")
 cursor  =  cn.cursor()
