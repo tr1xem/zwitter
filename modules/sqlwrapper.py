@@ -1,7 +1,33 @@
-import mysql.connector as  sql
-cn =  sql.connect(user='root', password='root', host='localhost',database='login',    charset='utf8mb4', collation='utf8mb4_general_ci')
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+# cn =  sql.connect(user='root', password='root', host='localhost',database='login',    charset='utf8mb4', collation='utf8mb4_general_ci')
+db_type = os.getenv('DB_TYPE', 'mysql')
+if db_type == 'mysql':
+    import mysql.connector as sql
+    cn = sql.connect(
+        user=os.getenv('DATABASE_USER'),
+        password=os.getenv('DATABASE_PASSWORD'),
+        host=os.getenv('DATABASE_HOST'),
+        database=os.getenv('DATABASE_NAME'),
+        charset=os.getenv('DB_CHARSET'),
+        collation=os.getenv('DB_COLLATION')
+    )
+    print("Connected to MySQL")
+elif db_type == 'postgres':
+    import psycopg2
+    cn = psycopg2.connect(
+        user=os.getenv('DATABASE_USER'),
+        password=os.getenv('DATABASE_PASSWORD'),
+        host=os.getenv('DATABASE_HOST'),
+        database=os.getenv('DATABASE_NAME'),
+        sslmode='require'  # Require SSL connection
+    )
+    print("Connected to PostgreSQL")
+else:
+    raise ValueError("Unsupported DB type")
 cursor  =  cn.cursor()
-cursor.execute('select * from users')
 create_table_query = """
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(20) NOT NULL PRIMARY KEY,
