@@ -11,9 +11,12 @@ Zwitter is a real time chat app based on a python module [NiceGui](https://niceg
 Note: Python 3.10+ Recommended
 
 ## How to run?
-1.) ``` pip install -r requirements.txt ```
 
-2.) ``` python main.py ```
+1.)  Set env  vars  see example env
+
+2.) ``` pip install -r requirements.txt ```
+
+3.) ``` python main.py ```
 
 
 ## TODO
