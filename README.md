@@ -24,6 +24,7 @@ Note: Python 3.10+ Recommended
 - [X] Login System
 - [x] Sql Integration
 - [x] Remote Sql  support
+- [x] Basic Sql Injection Protection
 - [X] Online user list
 - [X] Account Page
 - [ ] Multi Threading

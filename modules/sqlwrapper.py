@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-# cn =  sql.connect(user='root', password='root', host='localhost',database='login',    charset='utf8mb4', collation='utf8mb4_general_ci')
 db_type = os.getenv('DB_TYPE', 'mysql')
 if db_type == 'mysql':
     import mysql.connector as sql
@@ -27,7 +26,8 @@ elif db_type == 'postgres':
     print("Connected to PostgreSQL")
 else:
     raise ValueError("Unsupported DB type")
-cursor  =  cn.cursor()
+
+cursor = cn.cursor()
 create_table_query = """
 CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -39,29 +39,29 @@ CREATE TABLE IF NOT EXISTS users (
 cursor.execute(create_table_query)
 cn.commit()
 
-def registeruser(username,password,displayname,option):
-    cursor.execute(f"INSERT INTO users (username,password,displayname,option) VALUES ('{username}','{password}','{displayname}','{option}')")
+def registeruser(username, password, displayname, option):
+    cursor.execute("INSERT INTO users (username, password, displayname, option) VALUES (%s, %s, %s, %s)",
+                   (username, password, displayname, option))
     cn.commit()
 
-
-def  loginuser(username,password):
-    cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = '{username}' AND password = '{password}'")
+def loginuser(username, password):
+    print(username, password)
+    cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s AND password = %s", (username, password))
     result = cursor.fetchall()
     if result[0][0] == 1:
         return True
     else:
-        return  False
+        return False
 
 def getuser(username):
-    cursor.execute(f"SELECT * FROM users WHERE username = '{username}'")
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
     result = cursor.fetchall()
     return result[0]
 
-
 def checkuser(username):
-    cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = '{username}'")
+    cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", (username,))
     result = cursor.fetchall()
     if result[0][0] == 0:
         return True
     else:
-        return  False
+        return False
