@@ -37,4 +37,4 @@ async def always_success():
 
 init(app)
 if __name__ == '__main__':
-   uvicorn.run("main:app", host="0.0.0.0", port=8080, workers=1,reload=True, log_level="warning")
+   uvicorn.run("main:app", host="0.0.0.0", port=8080, workers=1, log_level="warning")
