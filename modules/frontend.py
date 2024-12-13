@@ -380,7 +380,7 @@ async def main():
                 }});
             }});
         """)
-        await broadcast_message(f"{name} is now connected.",ui.context.client)
+        broadcast_message(f"{name} is now connected.",ui.context.client)
         with ui.column().classes('w-full max-w-2xl mx-auto items-stretch'):
             with ui.column().style("position: absolute; top: 0; left: 0; height: 80%; width: 30%; z-index: 1; padding: 10px;"):
                 update_user()
