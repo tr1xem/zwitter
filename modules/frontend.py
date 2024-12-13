@@ -10,15 +10,16 @@ import re
 from modules.sqlwrapper import  *
 
 def init(fastapi_app: FastAPI):
+    logging.info("Initializing App")
+    init_db()
 
     ui.run_with(fastapi_app,storage_secret="AAA",title="Zwitter", favicon='💀',reconnect_timeout=30)
-# Storing Commands
 
 online_users = {
     "user1": {"name": "tr1x_em", "status": "Online", "avatar": "https://i.ibb.co/L1svvRg/tr1x-em.png"},
 }
 
-
+# ff
 clients = []
 
 
@@ -26,7 +27,7 @@ def handle_disconnect(user_id):
     if user_id and user_id in online_users:
         online_users.pop(user_id)
         update_user.refresh()  # Refresh to update the list after removal
-        print(f"User {user_id} disconnected and removed from the list.")
+        logging.info(f"User {user_id} disconnected and removed from the list.")
 # Functions - Load and Save and Register
 
 
@@ -140,7 +141,6 @@ def me_page() -> None:
         user_info = getuser(username)
         name = user_info[2]
         avatar = get_avatar(name,str(user_info[3]))
-        print(avatar)
         with ui.column().classes('absolute-center items-center'):
             ui.image(avatar).classes('rounded-full w-48 h-48 ml-4')
             ui.label(f'Hello {name}!').classes('text-h3')
@@ -222,6 +222,7 @@ def login() -> Optional[RedirectResponse]:
 # Online Users Implementation
 def broadcast_message(message: str,current) -> None:
     """Send a message to all connected clients."""
+    logging.info(f"User connected :{message}")
     update_user.refresh()
     for client in clients:
         if client != current:
@@ -304,7 +305,6 @@ replying_to = None
 def send_reply(msg_text, sender_name):
     global replying_to
     replying_to = (sender_name, msg_text)
-    print(f"Replying to: {sender_name}: {msg_text}")
 
 
 @ui.page('/chat',response_timeout=30)
@@ -322,13 +322,9 @@ async def main():
                 if replying_to[1].startswith("<div style='color: gray; font-style: italic;'>"):
                     pattern = r'<div>(.*?)</div>'
                     matches = re.findall(pattern, replying_to[1])
-                    print(matches)
                     formatted_message = f"<div style='color: gray; font-style: italic;'>Replying to {replying_to[0]}:<br>{matches[0][:max_length]}</div><div>{reply_text}</div>"
-
-                    print(f"Reply 1 : {formatted_message}")
                 else:
                     formatted_message = f"<div style='color: gray; font-style: italic;'>Replying to {replying_to[0]}:<br>{replying_to[1][:max_length] }</div><div>{reply_text}</div>"
-                    print(f"Reply 2 : {formatted_message}")
 
                 messages.append((username, avatar, formatted_message, stamp))
                 replying_to=None
