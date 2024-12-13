@@ -51,7 +51,13 @@ Account Page:
 
 Chat Ui:
 
-![image](https://github.com/user-attachments/assets/d2e30182-a97c-47a6-b362-e6d192145118)
+![image](https://github.com/user-attachments/assets/ecea292e-5886-4448-9753-85e50dccc1db)
+
+![image](https://github.com/user-attachments/assets/5cc02464-238e-4a1a-a559-14b1f6859a14)
+
+For those who dare:
+![image](https://github.com/user-attachments/assets/507f5fbc-563c-48ef-b1de-933edd272042)
+
 
 ## License
 
