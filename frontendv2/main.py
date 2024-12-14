@@ -1,11 +1,11 @@
 from nicegui import ui
 ui.dark_mode().enable()
 with ui.header().classes('bg-green',replace='row items-center') as header:
-    ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
     with ui.tabs() as tabs:
         ui.tab('Chat')
         ui.tab('Settings')
         ui.tab('C')
+    ui.button(on_click=lambda: right_drawer.toggle(), icon='menu').props('flat color=white').classes('items-end')
 
 with ui.footer(value=False) as footer:
     ui.label('Footer')
@@ -13,7 +13,7 @@ with ui.footer(value=False) as footer:
 dark = ui.dark_mode()
 dark.enable()
 
-with ui.left_drawer(top_corner=True, bottom_corner=True) as left_drawer:
+with ui.right_drawer(top_corner=False, bottom_corner=True) as right_drawer:
     ui.item_label('Contacts').props('header').classes('text-bold')
     with ui.list().props('w-full separator').classes('w-full'):
         ui.separator()
@@ -86,8 +86,8 @@ with ui.tab_panels(tabs, value='Chat').classes('w-full h-full  mx-auto items-cen
             ui.button('Light', on_click=dark.disable)
 
 with ui.footer().classes('bg-emerald-500'):
-    with ui.row().classes("w-full items-center"):
-        with  ui.row().classes("w-full"):
-            text = ui.input(placeholder='message').on('keydown.enter', print("work")).props('rounded outlined input-class=mx-3').classes('mr-10 w-full flex-grow w-full')
-            ui.button("Send").classes('bg-red')
+    with ui.column().classes("w-full items-center"):
+        with  ui.row().classes("w-fit"):
+            text = ui.input(placeholder='message').on('keydown.enter', print("work")).props('rounded outlined input-class=mx-3').classes('mr-10 w-100 flex-grow ').style('width: 20em')
+            ui.button("Send").classes('bg-red mr-10 w-100 flex-grow')
 ui.run()
