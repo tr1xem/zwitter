@@ -59,15 +59,8 @@ with ui.tab_panels(tabs, value='Chat').classes('w-full h-full  mx-auto items-cen
                 name='Random boi',
                 stamp='now',
                 avatar='https://robohash.org/random')
-        # with  ui.row().classes('height-100'):
-        #     ui.label('chat')
-        # text = ui.input(placeholder='message').on('keydown.enter', print("work")).props('rounded outlined input-class=mx-3').classes('mr-10 w-full flex-grow w-full')
-        # with ui.row().classes("w-full h-full"):
-        #     with  ui.row().classes("w-full absolute-bottom"):
-        #         ui.button("Send").classes('bg-red')
     with ui.tab_panel('Settings'):
         ui.label('Content of B')
-        # User Interface
         with ui.row().style('gap:10em'):
             with ui.column():
                 ui.label('OpenAI Whisper (voice transcription)').classes('text-2xl')
