@@ -82,13 +82,17 @@ def chat_bubble(message, sender=True):
         if sender:
             ui.image(image_url).classes('w-8 h-8 rounded-full')
 
-        with ui.column().classes('gap-1 max-w-[320px]'):
+        with ui.column().classes('gap-1 max-w-[300px]'):
             with ui.row().classes(f'items-center space-x-2 rtl:space-x-reverse {text_align}'):
-                ui.label('User Name').classes('text-sm font-semibold text-gray-900 dark:text-white')
+                ui.label(username).classes('text-sm font-semibold text-gray-900 dark:text-white')
                 ui.label('11:46').classes('text-sm font-normal text-gray-500 dark:text-gray-400')
 
-            with ui.column().classes(f'leading-1.5 p-4 border-gray-200 {bubble_color} {rounded_corner_sender}'):
-                ui.label(message).classes('text-sm font-normal text-gray-900 dark:text-white')
+            with ui.column().classes(f'leading-1.5 p-2 {bubble_color} {rounded_corner_sender}'):
+                if reply_to:
+                    with ui.column().classes(f'leading-1.5 p-1 {reply_color} rounded-lg w-full'):
+                        ui.label(f"{username}: {reply_to}").classes('text-sm font-normal italic text-gray-700 dark:text-gray-300 p-1 rounded-lg')
+
+                ui.label(message).classes('text-sm font-normal text-gray-900 dark:text-white p-2')
 
             ui.label('Delivered').classes('text-sm font-normal text-gray-500 dark:text-gray-400')
 
@@ -97,8 +101,8 @@ def chat_bubble(message, sender=True):
 
 # Example usage
 with ui.column().classes('gap-4'):
-    chat_bubble("That's awesome. I think our users will really appreciate the improvements.", sender=True)
-    chat_bubble("I agree! Let's move forward with the updates.", sender=False)
-
+    chat_bubble("That's awesome. I think our users will really appreciate the improvements.", sender=True, username="Bonnie Green")
+    chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
+    chat_bubble("Sure, I'll handle that right away.", sender=True, reply_to="I agree! Let's move forward with the updates.", username="Bonnie Green")
 
 ui.run(title="Chat Interface", dark=True)
