@@ -1,4 +1,8 @@
 from nicegui import ui
+from chat import *
+dark = ui.dark_mode()
+dark.enable()
+
 
 with ui.header().classes("bg-green", replace="row items-center") as header:
     with ui.tabs() as tabs:
@@ -12,8 +16,6 @@ with ui.header().classes("bg-green", replace="row items-center") as header:
 with ui.footer(value=False) as footer:
     ui.label("Footer")
 
-dark = ui.dark_mode()
-dark.enable()
 
 
 
@@ -46,35 +48,10 @@ with ui.tab_panels(tabs, value="Chat").classes(
     "w-full h-full  mx-auto items-center"
 ) as tab_panels:
     with ui.tab_panel("Chat"):
-        with ui.column().classes("w-full h-full mx-auto items-stretch").style(
-            "min-height: 50em"
-        ):
-            ui.chat_message(
-                "I use Arch(btw)",
-                name="Trix ",
-                stamp="now",
-                sent=True,
-                avatar="https://robohash.org/trix",
-            )
-            ui.chat_message(
-                "I use Arch(btw) too",
-                name="Trix 2",
-                stamp="now",
-                avatar="https://robohash.org/randi",
-            )
-            ui.chat_message(
-                "shame on you randi boy",
-                name="Trix ",
-                stamp="now",
-                sent=True,
-                avatar="https://robohash.org/trix",
-            )
-            ui.chat_message(
-                "dont bully me ;-;",
-                name="Random boi",
-                stamp="now",
-                avatar="https://robohash.org/random",
-            )
+        with ui.column().classes('gap-4 w-full'):
+            chat_bubble("That's awesome. I think our users will really appreciate the improvements.", sender=True, username="Bonnie Green")
+            chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
+            chat_bubble("Sure, I'll handle that right away.", sender=True, reply_to="I agree! Let's move forward with the updates.", username="Bonnie Green")
     with ui.tab_panel("Settings"):
         ui.label("Content of B")
         with ui.row().style("gap:10em"):
