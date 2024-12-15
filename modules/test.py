@@ -77,9 +77,16 @@ with ui.row().classes('h-screen w-screen bg-gray-900 text-white'):
         # Username input
         ui.separator().classes('my-4')
         ui.label('Set Your Username:').classes('text-sm mb-2')
+
+
+
+
         username_input = ui.input(value=USERNAME).classes(
             'w-full px-4 py-2 rounded bg-gray-700 text-white').on('blur', lambda: update_username())
 
+
+
+ddf
     # Main chat area
     with ui.column().classes('flex-1 h-full'):
         # Chat header

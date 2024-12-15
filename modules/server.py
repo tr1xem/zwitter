@@ -6,6 +6,7 @@ import websockets
 
 CONNECTIONS: Set[WebSocketServerProtocol] = set()
 
+
 async def broadcast(message: str):
     """Send a message to all connected clients."""
     to_remove = []
@@ -17,6 +18,7 @@ async def broadcast(message: str):
     # Remove disconnected clients
     for websocket in to_remove:
         CONNECTIONS.remove(websocket)
+
 
 async def handle_connect(websocket: WebSocketServerProtocol):
     """Register the new websocket connection, handle incoming messages, and remove the connection when it is closed."""
@@ -34,11 +36,12 @@ async def handle_connect(websocket: WebSocketServerProtocol):
             CONNECTIONS.remove(websocket)
             print(f"Connection closed. Total: {len(CONNECTIONS)}")
 
+
 async def start_websocket_server():
-    async with websockets.serve(handle_connect, 'localhost', 8765):
+    async with websockets.serve(handle_connect, "localhost", 8765):
         print("WebSocket server started at ws://localhost:8765")
         await asyncio.Future()
 
+
 if __name__ == "__main__":
     asyncio.run(start_websocket_server())
-
