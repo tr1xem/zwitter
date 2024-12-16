@@ -37,15 +37,18 @@ with ui.right_drawer(top_corner=False, bottom_corner=True).classes("bg-gray-800 
             with ui.item_section().props("side"):
                 ui.icon("chat").classes("text-blue-500")
 
-with ui.page_sticky(position="bottom-right", x_offset=20, y_offset=20):
-    ui.button(on_click=footer.toggle, icon="contact_support").props("fab color=blue").classes("p-2 rounded-lg bg-blue-500 hover:bg-blue-700 text-white")
-
+# with ui.page_sticky(position="bottom-right", x_offset=20, y_offset=20):
+#     ui.button(on_click=footer.toggle, icon="contact_support").props("fab color=blue").classes("p-2 rounded-lg bg-blue-500 hover:bg-blue-700 text-white")
+#
 with ui.tab_panels(tabs, value="Chat").classes(
     "w-full h-full mx-auto items-center p-4"
 ) as tab_panels:
     with ui.tab_panel("Chat"):
         with ui.column().classes('gap-4 w-full h-full overflow-auto'):
             chat_bubble("That's awesome. I think our users will really appreciate the improvements.", sender=True, username="Bonnie Green")
+            chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
+            chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
+            chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
             chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
             chat_bubble("Sure, I'll handle that right away.", sender=True, reply_to="I agree! Let's move forward with the updates.", username="Bonnie Green")
     with ui.tab_panel("Settings"):

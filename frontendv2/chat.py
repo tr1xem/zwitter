@@ -30,9 +30,9 @@ def chat_bubble(message, sender=True, reply_to=None, username="User Name"):
             ui.image(image_url).classes('w-8 h-8 rounded-full')
 
 # Example usage
-with ui.column().classes('gap-4 w-full'):
-    chat_bubble("That's awesome. I think our users will really appreciate the improvements.", sender=True, username="Bonnie Green")
-    chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
-    chat_bubble("Sure, I'll handle that right away.", sender=True, reply_to="I agree! Let's move forward with the updates.", username="Bonnie Green")
+# with ui.column().classes('gap-4 w-full'):
+#     chat_bubble("That's awesome. I think our users will really appreciate the improvements.", sender=True, username="Bonnie Green")
+#     chat_bubble("I agree! Let's move forward with the updates.", sender=False, username="Alex Brown")
+#     chat_bubble("Sure, I'll handle that right away.", sender=True, reply_to="I agree! Let's move forward with the updates.", username="Bonnie Green")
 
 ui.run(title="Chat Interface", dark=True)
